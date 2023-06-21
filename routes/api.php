@@ -17,11 +17,10 @@ Route::post('/crear-permiso',[ApiController::class,'crearPermiso']);
 
 
 Route::post('/asignar-permisos',[ApiController::class,'asignarPermiso']);
-Route::post('/asignar-rol',[ApiController::class,'asignarRol']);
+Route::post('/asignar-roles',[ApiController::class,'asignarRol']);
 
 
 Route::get('/roles',[ApiController::class,'roles']);
-//Route::get('/asignar-permiso',[ApiController::class,'asignar-permiso']);
 Route::get('/permisos',[ApiController::class,'permisos']);
 Route::post('/crear-usuario',[ApiController::class,'crearUsuario']);
 Route::post('/eliminar-usuario/{id}',[ApiController::class,'eliminarUsuario']);

@@ -50,7 +50,7 @@ class ApiController extends Controller
         $name = $request->name;
         $email = $request->email;
         $password = Hash::make($request->password);
-    if(Auth::User()->can('listarUsuario')){
+    //if(Auth::User()->can('listarUsuario')){
         DB::connection('mysql')->beginTransaction();
         try {
             User::create(['name' => $name, 'email' => $email, 'password' => $password]);
@@ -67,11 +67,11 @@ class ApiController extends Controller
             return response()->json($response, 404);
         }
     
-    }else{
-      $response["status"]  = 404;
-      $response["msg"] = "permiso denegado";
-      return response()->json($response, 404);
-    }
+    //}else{
+    //   $response["status"]  = 404;
+    //   $response["msg"] = "permiso denegado";
+    //   return response()->json($response, 404);
+    // }
     return response()->json($response); 
     }
 
@@ -220,7 +220,7 @@ public function crearPermiso(Request $request){
       $response["status"] = 1;
       $response["msg"] = '';
       $name = $request->name;
-  if(Auth::User()->can('listarPermisos')){
+  //if(Auth::User()->can('listarPermisos')){
       DB::connection('mysql')->beginTransaction();
       try {
           Permission::create(['name' => $name, 'guard_name' => "web"]);
@@ -238,11 +238,11 @@ public function crearPermiso(Request $request){
       }
   
   
-  }else{
-    $response["status"]  = 404;
-    $response["msg"] = "permiso denegado";
-    return response()->json($response, 404);
-  }
+//   }else{
+//     $response["status"]  = 404;
+//     $response["msg"] = "permiso denegado";
+//     return response()->json($response, 404);
+//   }
        return response()->json($response); 
   }
 
@@ -252,7 +252,7 @@ public function asignarPermiso(Request $request){
         $response["msg"] = '';
         $permission_id = $request->permission_id;
         $role_id = $request->role_id;
-    if(Auth::User()->can('listarPermisos')){
+    //if(Auth::User()->can('listarPermisos')){
         DB::connection('mysql')->beginTransaction();
         try {
 
@@ -285,50 +285,62 @@ public function asignarPermiso(Request $request){
             return response()->json($response, 200);
         }
     
-    }else{
-      $response["status"]  = 404;
-      $response["msg"] = "permiso denegado";
-      return response()->json($response, 404);
-    }
+    // }else{
+    //   $response["status"]  = 404;
+    //   $response["msg"] = "permiso denegado";
+    //   return response()->json($response, 404);
+    // }
     return response()->json($response); 
     }
 
 
 public function asignarRol(Request $request){
-    $info = new StdClass();
-    $info->error = true;
-    $info->mensaje = '';
-    $idUsuario = $request->idUsuario;
-    $idRole = $request->idRole;
-if(Auth::User()->can('model_has_roles')){
+    
+    $response["status"] = 1;
+    $response["msg"] = '';
+    $model_id = $request->model_id;
+    $role_id = $request->role_id;
+//if(Auth::User()->can('listarRoles')){
     DB::connection('mysql')->beginTransaction();
     try {
         
-        $user = User::where('id',$idUsuario)->first();
+        $user = User::where('id',$model_id)->first();
 
 
         if (!empty($user)) {
-            $role = Role::where('id',$idRole)->first();
+            $role = Role::where('id',$role_id)->first();
              if (!empty($role)) {
                 $user->assignRole($role); 
              }
-        }
 
+        }else{
+            $response["status"]  = 401;
+            $response["msg"] = 'No existe el Usuario asignado ';
+            $role = Role::all();
+            $response['data'] = $role;
+            return response()->json($response, 401);
+        }
         DB::connection('mysql')->commit();
-        $info->error = false;
-        $info->mensaje = ' Rol asignado con exito';
+        $response["status"]  = 200;
+        $response["msg"] = 'Usuario asignado a rol exitosamente';
+        $role = Role::all();
+        $response['data'] = $role;
+        return response()->json($response, 200);
+    
     } catch (\Throwable $th) {
         DB::connection('mysql')->rollBack();
-        $info->error = true;
-        $info->mensaje = $th->getMessage();
+        $response["status"]  = 200;
+        $response["msg"] = $th->getMessage();
+        return response()->json($response, 200);
     }
 
-}else{
-     $info->error = true;
-    $info->mensaje = 'Permiso denegado';
+// }else{
+//       $response["status"]  = 404;
+//       $response["msg"] = "permiso denegado";
+//       return response()->json($response, 404);
 
-}
-return response()->json($info);        
+// }
+return response()->json($response);        
 
 }
 
@@ -363,7 +375,7 @@ public function crearRole(Request $request){
     $response["status"] = 1;
     $response["msg"] = '';
     $name = $request->name;
-if(Auth::User()->can('listarRoles')){
+//if(Auth::User()->can('listarRoles')){
     DB::connection('mysql')->beginTransaction();
     try {
         Role::create(['name' => $name, 'guard_name' => "web"]);
@@ -381,11 +393,12 @@ if(Auth::User()->can('listarRoles')){
     }
 
 
-}else{
-  $response["status"]  = 404;
-  $response["msg"] = "permiso denegado";
-  return response()->json($response, 404);
-}
+//}
+// else{
+//   $response["status"]  = 404;
+//   $response["msg"] = "permiso denegado";
+//   return response()->json($response, 404);
+// }
      return response()->json($response); 
 }
 
